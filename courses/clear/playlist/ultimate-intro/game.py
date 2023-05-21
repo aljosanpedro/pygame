@@ -1,8 +1,10 @@
 # IMPORTS
 import pygame
+from random import seed,randint
 
 # START
 pygame.init()
+seed()
 
 # CONSTANTS
 TITLE = "Runner"
@@ -11,6 +13,9 @@ FPS = 60
 
 FONT = "font/Pixeltype.ttf"
 FONT_SIZE = 50
+
+SNAIL_MIN_SPEED = 5
+SNAIL_MAX_SPEED = SNAIL_MIN_SPEED * 2
 
 # SETUP
 screen = pygame.display.set_mode(RESOLUTION)
@@ -30,11 +35,20 @@ running = True
 # test_surface.fill("blue")
 
 # Images
-sky_image = pygame.image.load("graphics/sky.png")
-sky_position = (0,0)
+# backgrounds
+sky_image = pygame.image.load("graphics/sky.png").convert()
+sky_rect = sky_image.get_rect(topleft = (0,0))
 
-ground_image = pygame.image.load("graphics/ground.png")
-ground_position = (0,sky_image.get_height())
+ground_image = pygame.image.load("graphics/ground.png").convert()
+ground_rect = ground_image.get_rect(topleft = (0,sky_image.get_height()))
+
+# characters
+player_image = pygame.image.load("graphics/player/player_stand.png").convert_alpha()
+player_rect = player_image.get_rect(midbottom = (player_image.get_width()*(1.5),ground_rect.y))
+
+snail_image = pygame.image.load("graphics/snail/snail_1.png").convert_alpha()
+snail_rect = snail_image.get_rect(midbottom = (screen.get_width()-snail_image.get_width()*(1.5),ground_rect.y))
+snail_speed = SNAIL_MIN_SPEED
 
 # Texts
 title_text = font.render(TITLE,False,"black")
@@ -49,11 +63,23 @@ while running:
             
     # Screen
     # screen.fill("green")
-    screen.blit(sky_image,sky_position)
-    screen.blit(ground_image, ground_position)
+    # backgrounds
+    screen.blit(sky_image,sky_rect)
+    screen.blit(ground_image,ground_rect)
+    
     screen.blit(title_text,title_position)
     
-    # Update Frame
+    # characters
+    screen.blit(player_image,player_rect)
+    
+    screen.blit(snail_image,snail_rect)
+    snail_rect.x -= snail_speed
+    
+    if snail_rect.x <= 0:
+        snail_rect.left = screen.get_width()
+        snail_speed = randint(SNAIL_MIN_SPEED,SNAIL_MAX_SPEED)
+    
+    # Frame
     clock.tick(FPS)
     pygame.display.update()
 
